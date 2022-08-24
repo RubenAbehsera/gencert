@@ -37,6 +37,16 @@ func (p *PdfSaver) Save(cert cert.Cert) error {
 	// Header
 	header(pdf, &cert)
 
+	// --
+
+	// Body
+	body(pdf, &cert)
+
+	// --
+
+	// Footer
+	footer(pdf)
+
 	// save file
 	filename := fmt.Sprintf("%v.pdf", cert.LabelTitle)
 	path := path2.Join(p.OutputDir, filename)
@@ -82,4 +92,44 @@ func header(pdf *gofpdf.Fpdf, c *cert.Cert) {
 
 	pdf.SetFont("Helvetica", "", 40)
 	pdf.WriteAligned(0, 50, c.LabelCompletion, "C")
+	pdf.Ln(30)
+}
+
+func body(pdf *gofpdf.Fpdf, cert *cert.Cert) {
+
+	pdf.SetFont("Helvetica", "I", 20)
+	pdf.WriteAligned(0, 50, cert.LabelPresented, "C")
+	pdf.Ln(30)
+
+	// Student Name
+	pdf.SetFont("Times", "B", 40)
+	pdf.WriteAligned(0, 50, cert.Name, "C")
+	pdf.Ln(30)
+
+	// Participation
+	pdf.SetFont("Helvetica", "I", 15)
+	pdf.WriteAligned(0, 50, cert.LabelParticipation, "C")
+	pdf.Ln(30)
+
+	// Date
+	pdf.SetFont("Helvetica", "I", 15)
+	pdf.WriteAligned(0, 50, cert.LabelDate, "C")
+
+}
+
+func footer(pdf *gofpdf.Fpdf) {
+	opts := gofpdf.ImageOptions{
+		ImageType: "png",
+	}
+
+	imageWidth := 50.0
+	filename := "img/stamp.png"
+	pageWidth, pageHeight := pdf.GetPageSize()
+	x := pageWidth - imageWidth - 20.0
+	y := pageHeight - imageWidth - 20.0
+	pdf.ImageOptions(filename,
+		x, y,
+		imageWidth, 0,
+		false, opts, 0, "")
+
 }
