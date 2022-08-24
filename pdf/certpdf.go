@@ -12,14 +12,14 @@ type PdfSaver struct {
 	OutputDir string
 }
 
-func New(outpurdir string) (*PdfSaver, error) {
+func New(outputdir string) (*PdfSaver, error) {
 	var p *PdfSaver
-	err := os.MkdirAll(outpurdir, os.ModePerm)
+	err := os.MkdirAll(outputdir, os.ModePerm)
 	if err != nil {
 		return p, err
 	}
 	p = &PdfSaver{
-		OutputDir: outpurdir,
+		OutputDir: outputdir,
 	}
 	return p, nil
 }
