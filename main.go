@@ -2,8 +2,8 @@ package main
 
 import (
 	cert "example/gencert/cert"
-	"example/gencert/html"
-	"example/gencert/pdf"
+	"example/gencert/cert/html"
+	"example/gencert/cert/pdf"
 	"flag"
 	"fmt"
 	"os"
@@ -12,7 +12,13 @@ import (
 func main() {
 
 	outputType := flag.String("type", "pdf", "Output type of the certificate.")
+	file := flag.String("file", "", "csv file to parse")
 	flag.Parse()
+
+	if len(*file) <= 0 {
+		fmt.Printf("Invalid file, got : %v\n", file)
+		os.Exit(1)
+	}
 
 	var saver cert.Saver
 	var err error
@@ -32,15 +38,17 @@ func main() {
 		os.Exit(1)
 	}
 
-	c, err := cert.New("Golang programming", "Bob Dylan", "2018-06-21")
+	certs, err := cert.ParseCsv(*file)
 	if err != nil {
-		fmt.Printf("Error during certificate creation : %v", err)
+		fmt.Printf("Could not parse CSV file : %v\n", err)
 		os.Exit(1)
 	}
 
-	err = saver.Save(*c)
-	if err != nil {
-		return
+	for _, c := range certs {
+		err = saver.Save(*c)
+		if err != nil {
+			fmt.Printf("Could not save Cert : %v\n", err)
+		}
 	}
 
 }
